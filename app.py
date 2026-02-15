@@ -27,8 +27,32 @@ def search_deals():
 
     future_date = (datetime.now() + timedelta(days=60)).strftime("%Y-%m-%d")
 
-    destinations = ["LAS", "LAX", "DEN", "SEA", "ORD", "PHX", "MCO", "JFK"]
+destinations = [
+    # Domestic
+    "LAS", "LAX", "DEN", "SEA", "ORD", "PHX", "MCO", "JFK",
 
+    # Mexico & Caribbean
+    "CUN",  # Cancun
+    "PVR",  # Puerto Vallarta
+    "SJD",  # Cabo
+    "NAS",  # Bahamas
+
+    # Europe
+    "LHR",  # London
+    "CDG",  # Paris
+    "FCO",  # Rome
+    "BCN",  # Barcelona
+    "AMS",  # Amsterdam
+    "KEF",  # Iceland
+
+    # Asia
+    "HND",  # Tokyo
+    "ICN",  # Seoul
+
+    # Central/South America
+    "LIM",  # Lima
+    "BOG",  # Bogota
+]
     deals = []
 
     for dest in destinations:
