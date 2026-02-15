@@ -35,8 +35,8 @@ def search_deals():
     deals = []
 
     # Search departures 60 to 180 days out, every 10 days
-    for days_out in range(60, 181, 10):
-        departure_date = (datetime.now() + timedelta(days=days_out)).strftime("%Y-%m-%d")
+for days_out in [60, 75, 90, 120, 150]:
+    departure_date = (datetime.now() + timedelta(days=days_out)).strftime("%Y-%m-%d")
 
         for dest in destinations:
             url = "https://test.api.amadeus.com/v2/shopping/flight-offers"
