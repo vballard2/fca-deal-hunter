@@ -58,8 +58,12 @@ def send_telegram(message):
         "chat_id": TELEGRAM_CHAT_ID,
         "text": message
     }
-    requests.post(url, data=payload)
+    response = requests.post(url, data=payload)
 
+    print("Telegram response status:", response.status_code)
+    print("Telegram response body:", response.text)
+
+    response.raise_for_status()
 # === MAIN ===
 if __name__ == "__main__":
     deals = search_deals()
