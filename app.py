@@ -34,9 +34,11 @@ def search_deals():
 
     deals = []
 
-    # Search departures 60 to 180 days out, every 10 days
-for days_out in [60, 75, 90, 120, 150]:
-    departure_date = (datetime.now() + timedelta(days=days_out)).strftime("%Y-%m-%d")
+    # Reduced date checks to avoid long runtime
+    date_offsets = [60, 75, 90, 120, 150]
+
+    for days_out in date_offsets:
+        departure_date = (datetime.now() + timedelta(days=days_out)).strftime("%Y-%m-%d")
 
         for dest in destinations:
             url = "https://test.api.amadeus.com/v2/shopping/flight-offers"
@@ -57,7 +59,9 @@ for days_out in [60, 75, 90, 120, 150]:
                     deals.append((dest, price, departure_date))
 
     deals.sort(key=lambda x: x[1])
-    return deals[:5]# === SEND TELEGRAM MESSAGE ===
+    return deals[:5]
+
+# === SEND TELEGRAM MESSAGE ===
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {
@@ -77,9 +81,9 @@ if __name__ == "__main__":
     deals = search_deals()
 
     if deals:
-        msg = "🔥 FCA DEAL REPORT 🔥\n"
-        for dest, price in deals:
-            msg += f"{dest}: ${price}\n"
+        msg = "🔥 FCA DEAL REPORT 🔥\n\n"
+        for dest, price, date in deals:
+            msg += f"{dest}: ${price} — Depart {date}\n"
     else:
         msg = "No deals found today from FCA."
 
