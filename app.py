@@ -25,58 +25,39 @@ def search_deals():
     token = get_amadeus_token()
     headers = {"Authorization": f"Bearer {token}"}
 
-    future_date = (datetime.now() + timedelta(days=60)).strftime("%Y-%m-%d")
+    destinations = [
+        "LAS", "LAX", "DEN", "SEA", "ORD", "PHX", "MCO", "JFK",
+        "CUN", "PVR", "SJD", "NAS",
+        "LHR", "CDG", "FCO", "BCN", "AMS", "KEF",
+        "HND", "ICN", "LIM", "BOG"
+    ]
 
-destinations = [
-    # Domestic
-    "LAS", "LAX", "DEN", "SEA", "ORD", "PHX", "MCO", "JFK",
-
-    # Mexico & Caribbean
-    "CUN",  # Cancun
-    "PVR",  # Puerto Vallarta
-    "SJD",  # Cabo
-    "NAS",  # Bahamas
-
-    # Europe
-    "LHR",  # London
-    "CDG",  # Paris
-    "FCO",  # Rome
-    "BCN",  # Barcelona
-    "AMS",  # Amsterdam
-    "KEF",  # Iceland
-
-    # Asia
-    "HND",  # Tokyo
-    "ICN",  # Seoul
-
-    # Central/South America
-    "LIM",  # Lima
-    "BOG",  # Bogota
-]
     deals = []
 
-    for dest in destinations:
-        url = "https://test.api.amadeus.com/v2/shopping/flight-offers"
-        params = {
-            "originLocationCode": "FCA",
-            "destinationLocationCode": dest,
-            "departureDate": future_date,
-            "adults": 1,
-            "max": 1
-        }
+    # Search departures 60 to 180 days out, every 10 days
+    for days_out in range(60, 181, 10):
+        departure_date = (datetime.now() + timedelta(days=days_out)).strftime("%Y-%m-%d")
 
-        response = requests.get(url, headers=headers, params=params)
+        for dest in destinations:
+            url = "https://test.api.amadeus.com/v2/shopping/flight-offers"
+            params = {
+                "originLocationCode": "FCA",
+                "destinationLocationCode": dest,
+                "departureDate": departure_date,
+                "adults": 1,
+                "max": 1
+            }
 
-        if response.status_code == 200:
-            data = response.json()
-            if data.get("data"):
-                price = float(data["data"][0]["price"]["total"])
-                deals.append((dest, price))
+            response = requests.get(url, headers=headers, params=params)
+
+            if response.status_code == 200:
+                data = response.json()
+                if data.get("data"):
+                    price = float(data["data"][0]["price"]["total"])
+                    deals.append((dest, price, departure_date))
 
     deals.sort(key=lambda x: x[1])
-    return deals[:3]
-
-# === SEND TELEGRAM MESSAGE ===
+    return deals[:5]# === SEND TELEGRAM MESSAGE ===
 def send_telegram(message):
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
     payload = {
