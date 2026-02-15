@@ -1,15 +1,12 @@
 import requests
 import os
-from twilio.rest import Client
 from datetime import datetime, timedelta
 
 # === LOAD ENV VARIABLES ===
 AMADEUS_API_KEY = os.environ.get("AMADEUS_API_KEY")
 AMADEUS_API_SECRET = os.environ.get("AMADEUS_API_SECRET")
-TWILIO_ACCOUNT_SID = os.environ.get("TWILIO_ACCOUNT_SID")
-TWILIO_AUTH_TOKEN = os.environ.get("TWILIO_AUTH_TOKEN")
-TWILIO_PHONE = os.environ.get("TWILIO_PHONE")
-YOUR_PHONE = os.environ.get("YOUR_PHONE")
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 
 # === GET AMADEUS ACCESS TOKEN ===
 def get_amadeus_token():
@@ -54,14 +51,14 @@ def search_deals():
     deals.sort(key=lambda x: x[1])
     return deals[:3]
 
-# === SEND TEXT ===
-def send_text(message):
-    client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-    client.messages.create(
-        body=message,
-        from_=TWILIO_PHONE,
-        to=YOUR_PHONE
-    )
+# === SEND TELEGRAM MESSAGE ===
+def send_telegram(message):
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": message
+    }
+    requests.post(url, data=payload)
 
 # === MAIN ===
 if __name__ == "__main__":
@@ -74,4 +71,4 @@ if __name__ == "__main__":
     else:
         msg = "No deals found today from FCA."
 
-    send_text(msg)
+    send_telegram(msg)
