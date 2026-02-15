@@ -17,6 +17,7 @@ def get_amadeus_token():
         "client_secret": AMADEUS_API_SECRET
     }
     response = requests.post(url, data=data)
+    response.raise_for_status()
     return response.json()["access_token"]
 
 # === SEARCH CHEAP FLIGHTS ===
@@ -58,12 +59,14 @@ def send_telegram(message):
         "chat_id": TELEGRAM_CHAT_ID,
         "text": message
     }
+
     response = requests.post(url, data=payload)
 
     print("Telegram response status:", response.status_code)
     print("Telegram response body:", response.text)
 
     response.raise_for_status()
+
 # === MAIN ===
 if __name__ == "__main__":
     deals = search_deals()
@@ -74,5 +77,8 @@ if __name__ == "__main__":
             msg += f"{dest}: ${price}\n"
     else:
         msg = "No deals found today from FCA."
+
+    print("Final message being sent:")
+    print(msg)
 
     send_telegram(msg)
